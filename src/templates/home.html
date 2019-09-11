@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+        <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/sticky-footer-navbar/">
+        <script type="text/javascript">
+                var ctxL = document.getElementById("lineChart").getContext('2d');
+                var myLineChart = new Chart(ctxL, {
+                  type: 'line',
+                  data: {
+                    labels: ["January", "February", "March", "April", "May", "June", "July"],
+                    datasets: [{
+                        label: "My First dataset",
+                        data: [65, 59, 80, 81, 56, 55, 40],
+                        backgroundColor: [
+                          'rgba(105, 0, 132, .2)',
+                        ],
+                        borderColor: [
+                          'rgba(200, 99, 132, .7)',
+                        ],
+                        borderWidth: 2
+                      },
+                      {
+                        label: "My Second dataset",
+                        data: [28, 48, 40, 19, 86, 27, 90],
+                        backgroundColor: [
+                          'rgba(0, 137, 132, .2)',
+                        ],
+                        borderColor: [
+                          'rgba(0, 10, 130, .7)',
+                        ],
+                        borderWidth: 2
+                      }
+                    ]
+                  },
+                  options: {
+                    responsive: true
+                  }
+                });
+                
+        </script> 
+        
+        <title>TP2</title>       
+
+    </head>
+    <body>  
+            <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+                    <a class="navbar-brand" href="#">Taller de proyecto II</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+            
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item active">
+                                <a class="nav-link" href="#">Home
+                        <span class="sr-only">(current)</span>
+                      </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://github.com/gmaron/tp2_example">Link to repo</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://github.com/gmaron/tp2_template">Link to template</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            
+        
+        <canvas id="lineChart"></canvas>
+        <h1>Formulario de registro</h1>
+        <!--action="/form" method="POST"-->
+        <form>
+
+            <label for="nombre">Nombre</label> <br>
+            <input type="text" 
+                   id="nombre" 
+                   name="nombre" 
+                   placeholder="Ingrese su nombre" required/> <br>
+            <button type="submit">Registrarme!</button>
+            <button type="button" class="btn btn-secondary btn-lg btn-block">Block level button</button>
+        </form>
+
+<footer class="page-footer font-small blue">
+
+        <!-- Copyright -->
+        <div class="footer-copyright text-center py-3">© 2019 Taller de proyecto 2 Making Twice Enterprice.
+                <div class="footer-copyright text-center py-3">© Autores: Alvarado Ezequiel, Cutrona Eliseo, Salvador Patricio.
+         <!-- <a href="https://mdbootstrap.com/education/bootstrap/"> Autores: Ezequiel Alvarado, Patricio Salvador</a>-->
+        </div>
+        <!-- Copyright -->
+      
+      </footer>
+    
+    </body>
+</html>
