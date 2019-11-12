@@ -38,29 +38,30 @@
                   </li>
               </ul>
           </div>
-      </nav>
-      
-            <script
-      src="https://code.jquery.com/jquery-3.4.1.min.js"
-      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-      crossorigin="anonymous"></script>
-  
+      </nav>      
+      <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"> </script>
-      <script> const socket = io()
+      <script> const socket = io();
         socket.on('evento', function (data){
             t=data[0];
-            fecha=data[1]
+            fecha=data[1];
+            humedad=data[2];
             var date = new Date(fecha*1000);
-
-            var hora=date.getHours();
-            var minutos=date.getMinutes();
-            var segundos=date.getSeconds();
-            if(hora=0){
-              hora="00"
+            fecha=date.toLocaleDateString();
+            console.log(hora=date.toLocaleTimeString());
+            console.log(fecha);
+            if(t > '35'){
+              document.getElementById("Temperatura").style.color = "rgb(255, 41, 41)";
             }
-            fecha=date.toLocaleDateString()
-            console.log(hora=date.toLocaleTimeString())
-            console.log(fecha)
+            else{
+              if(t < '10'){
+                document.getElementById("Temperatura").style.color = "rgb(0, 97, 129)";
+              }
+              else{
+                document.getElementById("Temperatura").style.color = "rgb(255, 186, 82)";
+              }
+            }
+            $('#Humedad').text(humedad)
             $('#Temperatura').text(t)
             $('#Fecha').text(fecha)
             $('#Hora').text(hora)
@@ -84,8 +85,8 @@
         <div class="col-4">Humidity</div>
       </div>
       <div class="row justify-content-center text-center">
-        <div class="col-4"><span style="color: rgb(144, 238, 144); font-size: 30pt"><p id="Temperatura">{{temp}}</p></div>
-        <div class="col-4"><span style="color: rgb(173, 216, 230); font-size: 30pt"><script type="text/javascript"> document.write(temperature);</script></span></div>
+        <div class="col-4"><span style="color: rgb(219, 231, 106); font-size: 30pt"><p id="Temperatura">{{temp}}</p></span></div>
+        <div class="col-4"><span style="color: rgb(173, 216, 230); font-size: 30pt"><p id="Humedad">{{hum}}</p></span></div>
       </div>
       <div class="row justify-content-center text-center">
         <div class="col-8">
