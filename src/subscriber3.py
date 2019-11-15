@@ -6,7 +6,6 @@
 
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
 import sys
-import uuid
 import logging
 import time
 import json
@@ -34,7 +33,6 @@ GGC_ADDR_NAME = "ggc-host"    # stores GGC host address
 temp="33"
 timestamp="Que es esto"
 datos = ['1','2']
-coreInfo = any
 # Shadow JSON schema:
 #
 # Name: Bot
@@ -98,48 +96,11 @@ def getGGCAddr(filePath):
     f = open(filePath, "r")
     return f.readline()
 
-
-"""
-# Read in command-line parameters
-parser = argparse.ArgumentParser()
-parser.add_argument("-e", "--endpoint", action="store", required=True, dest="host", help="Your AWS IoT custom endpoint")
-parser.add_argument("-r", "--rootCA", action="store", required=True, dest="rootCAPath", help="Root CA file path")
-parser.add_argument("-c", "--cert", action="store", dest="certificatePath", help="Certificate file path")
-parser.add_argument("-k", "--key", action="store", dest="privateKeyPath", help="Private key file path")
-parser.add_argument("-n", "--thingName", action="store", dest="thingName", default="Bot", help="Targeted thing name")
-parser.add_argument("-id", "--clientId", action="store", dest="clientId", default="traffictemp",
-                    help="Targeted client id")
-
-args = parser.parse_args()
-host = args.host
-iotCAPath = args.rootCAPath
-certificatePath = args.certificatePath
-privateKeyPath = args.privateKeyPath
-thingName = args.thingName
-clientId = args.clientId
-"""
-
-iotCAPath ="root-ca-cert.pem"
-host="a4f470uvj4nft-ats.iot.us-east-2.amazonaws.com" #Your AWS IoT custom endpoint
-thingName = "GG_Rpi"
-clientId = "GG_Subscriber"
-privateKeyPath="3af6bd8ef5.private.key"
-certificatePath="3af6bd8ef5.cert.pem"
-
-# Configure logging
-logger = logging.getLogger("AWSIoTPythonSDK.core")
-logger.setLevel(logging.INFO) # set to logging.DEBUG for additional logging
-streamHandler = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-streamHandler.setFormatter(formatter)
-logger.addHandler(streamHandler)
-
-# Run Discovery service to check which GGC to connect to, if it hasn't been run already
-# Discovery talks with the IoT cloud to get the GGC CA cert and ip address
-
-if not os.path.isfile('./groupCA/root-ca.crt'):
+# Used to discover GGC group CA and end point. After discovering it persists in GROUP_PATH
+def discoverGGC(host, iotCAPath, certificatePath, privateKeyPath, clientId):
     # Progressive back off core
     backOffCore = ProgressiveBackOffCore()
+
     # Discover GGCs
     discoveryInfoProvider = DiscoveryInfoProvider()
     discoveryInfoProvider.configureEndpoint(host)
@@ -154,14 +115,6 @@ if not os.path.isfile('./groupCA/root-ca.crt'):
     discovered = False
     groupCA = None
     coreInfo = None
-
-    rootCAPath = GROUP_PATH + CA_NAME
-    print("GGC Group CA Path: " + rootCAPath)
-    print("Private Key thing Path: " + privateKeyPath)
-    print("Certificate thing Path: " + certificatePath)
-    print("Client ID(thing name): " + clientId)
-    print("Target shadow thing ID(thing name of shadow): " + thingName)
-
     while retryCount != 0:
         try:
             discoveryInfo = discoveryInfoProvider.discover(clientId)
@@ -184,43 +137,13 @@ if not os.path.isfile('./groupCA/root-ca.crt'):
             # For simplicity, we will assume the first host address that looks like an ip
             # is the right one to connect to GGC.
             # Note: this can also be set manually via the update-connectivity-info CLI
-            """
-            connected=False
-            for connectivityInfo in coreInfo.connectivityInfoList:
-                currentHost = connectivityInfo.host
-                currentPort = connectivityInfo.port
-                print("Trying to connect to core at %s:%d" % (currentHost, currentPort))
-                myAWSIoTMQTTShadowClient.configureEndpoint(currentHost, currentPort)
-                try:
-                    myAWSIoTMQTTShadowClient.connect()
-                    connected = True
+            for addr in coreInfo.connectivityInfoList:
+                hostAddr = addr.host
+                if isIpAddress(hostAddr):
                     break
-                except BaseException as e:
-                    print("Error in connect!")
-                    print("Type: %s" % str(type(e)))
-                    print("Error message: %s" % e)
 
-            if not connected:
-                print("Cannot connect to core %s. Exiting..." % coreInfo.coreThingArn)
-                sys.exit(-2)
-            print("SE conecto!")
-            """
+            print("Discovered GGC Host Address: " + hostAddr)
 
-            """print("Discovered GGC Host Address: " + hostAddr)"""
-
-
-            print("Now we persist the connectivity/identity information...")
-            groupCA = GROUP_PATH + groupId + "_CA_" + str(uuid.uuid4()) + ".crt"
-            if not os.path.exists(GROUP_PATH):
-                os.makedirs(GROUP_PATH)
-            groupCAFile = open(groupCA, "w")
-            groupCAFile.write(ca)
-            groupCAFile.close()
-
-            discovered = True
-            print("Now proceed to the connecting flow...")
-            break
-            """
             print("Now we persist the connectivity/identity information...")
             groupCA = GROUP_PATH + CA_NAME
             ggcHostPath = GROUP_PATH + GGC_ADDR_NAME
@@ -236,7 +159,6 @@ if not os.path.isfile('./groupCA/root-ca.crt'):
             discovered = True
             print("Now proceed to the connecting flow...")
             break
-            """
         except DiscoveryInvalidRequestException as e:
             print("Invalid discovery request detected!")
             print("Type: " + str(type(e)))
@@ -246,45 +168,73 @@ if not os.path.isfile('./groupCA/root-ca.crt'):
         except BaseException as e:
             print("Error in discovery!")
             print("Type: " + str(type(e)))
-            print("Error message: " + e)
+            print("Error message: " + e.message)
             retryCount -= 1
             print("\n"+str(retryCount) + "/" + str(MAX_DISCOVERY_RETRIES) + " retries left\n")
             print("Backing off...\n")
             backOffCore.backOff()
+
     if not discovered:
         print("Discovery failed after " + str(MAX_DISCOVERY_RETRIES) + " retries. Exiting...\n")
         sys.exit(-1)
 
+"""
+# Read in command-line parameters
+parser = argparse.ArgumentParser()
+parser.add_argument("-e", "--endpoint", action="store", required=True, dest="host", help="Your AWS IoT custom endpoint")
+parser.add_argument("-r", "--rootCA", action="store", required=True, dest="rootCAPath", help="Root CA file path")
+parser.add_argument("-c", "--cert", action="store", dest="certificatePath", help="Certificate file path")
+parser.add_argument("-k", "--key", action="store", dest="privateKeyPath", help="Private key file path")
+parser.add_argument("-n", "--thingName", action="store", dest="thingName", default="Bot", help="Targeted thing name")
+parser.add_argument("-id", "--clientId", action="store", dest="clientId", default="traffictemp",
+                    help="Targeted client id")
 
-    # Init AWSIoTMQTTShadowClient
-    myAWSIoTMQTTShadowClient = AWSIoTMQTTShadowClient(clientId)
-    myAWSIoTMQTTShadowClient.configureCredentials(groupCA, privateKeyPath, certificatePath)
+args = parser.parse_args()
+host = args.host
+iotCAPath = args.rootCAPath
+certificatePath = args.certificatePath
+privateKeyPath = args.privateKeyPath
+thingName = args.thingName
+clientId = args.clientId
+"""
+iotCAPath ="root-ca-cert.pem"
+host="a4f470uvj4nft-ats.iot.us-east-2.amazonaws.com" #Your AWS IoT custom endpoint
+thingName = "GG_Rpi"
+clientId = "GG_Subscriber"
+privateKeyPath="3af6bd8ef5.private.key"
+certificatePath="3af6bd8ef5.cert.pem"
 
-    connected = False
-    for connectivityInfo in coreInfo.connectivityInfoList:
-        currentHost = connectivityInfo.host
-        currentPort = connectivityInfo.port
-        print("Trying to connect to core at %s:%d" % (currentHost, currentPort))
-        if(currentHost!= "192.168.0.127"):
-            myAWSIoTMQTTShadowClient.configureEndpoint(currentHost, currentPort)
-            try:
-                myAWSIoTMQTTShadowClient.connect()
-                connected = True
-                break
-            except Exception as e:
-                print("Error in connect!")
-                print("Type: %s" % str(type(e)))
-                print("Error message: %s" % e)
+# Configure logging
+logger = logging.getLogger("AWSIoTPythonSDK.core")
+logger.setLevel(logging.INFO) # set to logging.DEBUG for additional logging
+streamHandler = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+streamHandler.setFormatter(formatter)
+logger.addHandler(streamHandler)
 
-    if not connected:
-        print("Cannot connect to core %s. Exiting..." % coreInfo.coreThingArn)
-        sys.exit(-2)
+# Run Discovery service to check which GGC to connect to, if it hasn't been run already
+# Discovery talks with the IoT cloud to get the GGC CA cert and ip address
+
+if not os.path.isfile('./groupCA/root-ca.crt'):
+    discoverGGC(host, iotCAPath, certificatePath, privateKeyPath, clientId)
 else:
     print("Greengrass core has already been discovered.")
 
+# read GGC Host Address from file
+ggcAddrPath = GROUP_PATH + GGC_ADDR_NAME
+rootCAPath = GROUP_PATH + CA_NAME
+ggcAddr = getGGCAddr(ggcAddrPath)
+print("GGC Host Address: " + ggcAddr)
+print("GGC Group CA Path: " + rootCAPath)
+print("Private Key of traffictemp thing Path: " + privateKeyPath)
+print("Certificate of traffictemp thing Path: " + certificatePath)
+print("Client ID(thing name for traffictemp): " + clientId)
+print("Target shadow thing ID(thing name for traffictemp): " + thingName)
 
-
-
+# Init AWSIoTMQTTShadowClient
+myAWSIoTMQTTShadowClient = AWSIoTMQTTShadowClient(clientId)
+myAWSIoTMQTTShadowClient.configureEndpoint(ggcAddr, 8883)
+myAWSIoTMQTTShadowClient.configureCredentials(rootCAPath, privateKeyPath, certificatePath)
 
 # AWSIoTMQTTShadowClient configuration
 myAWSIoTMQTTShadowClient.configureAutoReconnectBackoffTime(1, 32, 20)
@@ -292,7 +242,7 @@ myAWSIoTMQTTShadowClient.configureConnectDisconnectTimeout(10)  # 10 sec
 myAWSIoTMQTTShadowClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 # Connect to AWS IoT
-
+myAWSIoTMQTTShadowClient.connect()
 
 # Create a deviceShadow with persistent subscription
 deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName(thingName, True)
