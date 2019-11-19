@@ -10,6 +10,7 @@ from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
 import sys
 import logging
 import time
+import Adafruit_DHT
 import json
 import argparse
 import os
@@ -19,6 +20,12 @@ from itertools import cycle
 from AWSIoTPythonSDK.core.greengrass.discovery.providers import DiscoveryInfoProvider
 from AWSIoTPythonSDK.core.protocol.connection.cores import ProgressiveBackOffCore
 from AWSIoTPythonSDK.exception.AWSIoTExceptions import DiscoveryInvalidRequestException
+#---------------INICIALIZO SENSOR----------------
+sensor = Adafruit_DHT.DHT11
+pin = 4
+
+
+
 
 MAX_DISCOVERY_RETRIES = 10    # MAX tries at discovery before giving up
 GROUP_PATH = "./groupCA/"     # directory storing discovery info
@@ -44,9 +51,11 @@ def customShadowCallback_Update(payload, responseStatus, token):
         print("Update request " + token + " time out!")
     if responseStatus == "accepted":
         payloadDict = json.loads(payload)
+        print(payload)
         print("~~~~~~~~~~Shadow Update Accepted~~~~~~~~~~~~~")
         print("Update request with token: " + token + " accepted!")
-        print("property: " + str(payloadDict["state"]["desired"]["property"]))
+        print("humedad: " + str(payloadDict["state"]["desired"]["data"]["humedad"]))
+        print("temperatura: " + str(payloadDict["state"]["desired"]["data"]["temperatura"]))
         print("~~~~~~~~~~~~~~~~~~~~~~~\n\n")
     if responseStatus == "rejected":
         print("Update request " + token + " rejected!")
@@ -199,10 +208,14 @@ deviceShadowHandler = myAWSIoTMQTTShadowClient.createShadowHandlerWithName(thing
 # This loop simulates a traffic light cycling between G, Y, R by updating the desired property in the shadow
 # This uses the desired property because the light GGAD will get the request for changing and update the reported property
 # The idea is the desired property is a request to update the light while the reported property is the actual value of the light
-states = ['22','24','26','30','29','28','27','25','20','23']
-pool = cycle(states) 
-for item in pool: 
-    JSONPayload = '{"state":{"desired":{"property":' + '"' + item + '"}}}'
-    print(JSONPayload)
-    deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 5)
-    time.sleep(10)
+
+try:
+    while True:
+        humedad, temperatura = Adafruit_DHT.read_retry(sensor, pin)
+        JSONPayload = '{"state": {"desired":{"data":{"humedad":'+'"'+str(humedad)+'","temperatura":'+' "'+ str(temperatura) +'"}}}}'
+        print(JSONPayload)
+        deviceShadowHandler.shadowUpdate(JSONPayload, customShadowCallback_Update, 10)
+        time.sleep(4)
+except Exception,e:
+    print ('Error en el ADC...') 
+    
