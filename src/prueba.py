@@ -7,9 +7,9 @@ import schemadb
 
 
 
-datos1 = [50.2,1571780918,96] #dia atras 
-datos2 = [25.1,1571608118,95]
-datos3 = [32.3,1571863718,22] #hora atras
+datos1 = [50.2,1572557926,96] #dia atras 
+datos2 = [25.1,1572496726,95]
+datos3 = [32.3,1572496626,22] #hora atras
 
 act = time.time()
 ts = 1571023418
