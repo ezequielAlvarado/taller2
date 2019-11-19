@@ -40,45 +40,39 @@
           </div>
       </nav>      
       <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script type="text/javascript">
-       function getDatos() {  
-          $.ajax({
-                url: '/_get_data',
-                dataType: 'text',
-                async: false,     //ponemos el parámetro asyn a falso
-                type : 'GET'
-            }).done(function(data){
-              console.log(data)
-              console.log(d=JSON.parse(data))
-              t=d['temperatura']
-              humedad=d["humedad"]
-              fecha=d.timestamp
-              data.humedad
-              var date = new Date(fecha*1000);
-              fecha=date.toLocaleDateString();
-              console.log(hora=date.toLocaleTimeString());
-              console.log(fecha);
-              if(t > '35'){
-                document.getElementById("Temperatura").style.color = "rgb(255, 41, 41)";
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"> </script>
+      <script> const socket = io();
+        socket.on('evento', function (data){
+            t=data[0];
+            fecha=data[1];
+            humedad=data[2];
+            var date = new Date(fecha*1000);
+            fecha=date.toLocaleDateString();
+            console.log(hora=date.toLocaleTimeString());
+            console.log(fecha);
+            if(t > '35'){
+              document.getElementById("Temperatura").style.color = "rgb(255, 41, 41)";
+            }
+            else{
+              if(t < '10'){
+                document.getElementById("Temperatura").style.color = "rgb(0, 97, 129)";
               }
               else{
-                if(t < '10'){
-                  document.getElementById("Temperatura").style.color = "rgb(0, 97, 129)";
-                }
-                else{
-                  document.getElementById("Temperatura").style.color = "rgb(255, 186, 82)";
-                }
+                document.getElementById("Temperatura").style.color = "rgb(255, 186, 82)";
               }
-              $('#Humedad').text(humedad)
-              $('#Temperatura').text(t)
-              $('#Fecha').text(fecha)
-              $('#Hora').text(hora)
-            });
-          }
+            }
+            $('#Humedad').text(humedad)
+            $('#Temperatura').text(t)
+            $('#Fecha').text(fecha)
+            $('#Hora').text(hora)
 
-        //con esta funcion llamamos a la función getDatos
-        setInterval(getDatos,1000);
-    </script>
+        })
+      </script>
+      
+      <script type="text/javascript">
+        var temperature=0 ; 
+        var humidity = 50;
+      </script>
 
 
       
@@ -87,12 +81,12 @@
         <div class="col-4"><i class="fas fa-map-marker fa-6x fa-rotate-180"></i></div>
       </div>
       <div class="row justify-content-center text-center">
-        <div class="col-4">Temperatura</div>
-        <div class="col-4">Humedad</div>
+        <div class="col-4">Temperature</div>
+        <div class="col-4">Humidity</div>
       </div>
       <div class="row justify-content-center text-center">
-        <div class="col-4"><span style="color: rgb(219, 231, 106); font-size: 30pt"><p id="Temperatura">0</p></span></div>
-        <div class="col-4"><span style="color: rgb(173, 216, 230); font-size: 30pt"><p id="Humedad">0</p></span></div>
+        <div class="col-4"><span style="color: rgb(219, 231, 106); font-size: 30pt"><p id="Temperatura">{{temp}}</p></span></div>
+        <div class="col-4"><span style="color: rgb(173, 216, 230); font-size: 30pt"><p id="Humedad">{{hum}}</p></span></div>
       </div>
       <div class="row justify-content-center text-center">
         <div class="col-8">
@@ -111,6 +105,18 @@
         
       
       <div class="row justify-content-center " style="margin-top: 25px;">
+          <div class="card col-8" style="max-height: 100px; overflow-y: auto;">
+            <div class="card-header text-center"> LOGS </div>
+            <div class="card-content"> 
+              <p style= "font-family:'Times New Roman'">Aca van los logs. </p>
+              <p style= "font-family:'Times New Roman'">Aca van los logs. </p>
+              <p style= "font-family:'Times New Roman'">Aca van los logs. </p>
+              <p style= "font-family:'Times New Roman'">Aca van los logs. </p>
+              <p style= "font-family:'Times New Roman'">Aca van los logs. </p>
+              <p style= "font-family:'Times New Roman'">Aca van los logs. </p>
+            </div>
+          </div>
+        </div>
 
       <footer class="page-footer font-small blue">
         <!-- Copyright -->
