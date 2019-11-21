@@ -1,7 +1,7 @@
 #
 # Copyright 2010-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
-
+# coding=utf-8
 
 
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
@@ -274,6 +274,7 @@ tiempo = 3600 # Una hora atras
 
 @app.route("/")
 def main():
+    tiempo = 3600 # Una hora atras
     return render_template('home.html',temp=temp,timestamp=timestamp)
 
 @app.route("/_get_data", methods=['GET'])
@@ -331,6 +332,7 @@ def get_d():
             temp.append(item["Temp"])
             hum.append(item["Hum"]) 
         return jsonify({'date' : date, 'hum': hum, 'temp' : temp, 'cant': N})
+
 
 @app.route('/history_sel', methods=['POST'])
 def handle_intervalo():
