@@ -39,21 +39,15 @@
             </nav>
             <!-- Importando para el socket I/O -->
             <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"> </script>
-
-            <script> socket = io();
-            socket.on('reload', function (){
-                location.reload();
-            })
-            </script>
+            <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
             <div class="row justify-content-center text-center" style="margin-top: 75px;">
                 <div class="col-md-11" id="graf1">
                     <canvas id="myChart1" width="200" height="75">
                     <script type="text/javascript">
-                    d = JSON.parse('{{date | tojson | safe}}');
-                    t = JSON.parse('{{temp | tojson | safe}}');
-                    tipo = "Temperature"
-                    grafico(d,t,'{{cant}}', tipo);
+                        d = JSON.parse('{{date | tojson | safe}}');
+                        t = JSON.parse('{{temp | tojson | safe}}');
+                        tipo = "Temperature"
+                        grafico(d,t,'{{cant}}', tipo);
                     </script>
                     </canvas>
                 </div>
@@ -62,10 +56,10 @@
                 <div class="col-md-11" id="graf2">
                     <canvas id="myChart2" width="200" height="75">
                     <script type="text/javascript">
-                    d = JSON.parse('{{date | tojson | safe}}');
-                    h = JSON.parse('{{hum | tojson | safe}}');
-                    tipo = "Humidity"
-                    grafico(d,h,'{{cant}}', tipo);
+                        d = JSON.parse('{{date | tojson | safe}}');
+                        h = JSON.parse('{{hum | tojson | safe}}');
+                        tipo = "Humidity"
+                        grafico(d,h,'{{cant}}', tipo);
                     </script>
                     </canvas>
                 </div>
@@ -79,8 +73,6 @@
                     <option value="Y">1 Year</option>
                 </select>
             </div>
-    
-            <footer class="page-footer font-small blue">
             <!-- Copyright -->
             <div class="footer-copyright text-center py-3">© 2019 Taller de proyecto 2 Making Twice Enterprice.
                     <div class="footer-copyright text-center py-3">© Autores: Alvarado Ezequiel, Cutrona Eliseo, Salvador Patricio.
@@ -88,6 +80,5 @@
             </div>
             <!-- Copyright -->
             </footer>
-        
         </body>
     </html>
