@@ -23,7 +23,6 @@ function x(){
             grafico(date,h,c,tipo2);
         }
     });
-    clearInterval(int);
 }
 
 
@@ -33,15 +32,11 @@ function tiempo() {
     var selectedValue = selectBox.options[selectBox.selectedIndex].value;
     console.log(selectedValue);
     $.post( "/history_sel", { selected: selectedValue});
-    startinterval();
+    x();
 }
 
-function startinterval(){
-    int = setInterval(x,1000);
-}
 
 function grafico(date,data,cant,tipo){
-    console.log("pollopa" + cant);
     if(tipo == "Temperature"){
         Max = 60;
         Min = 0;
