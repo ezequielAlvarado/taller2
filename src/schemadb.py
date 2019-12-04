@@ -30,7 +30,7 @@ def add_data(Data):
         if(Data[1] < 1):
             return ("Dia erroneo")
         else:
-            if(Data[2] < 0) or (Data[2] > 100):
+            if(Data[2] < 0.0) or (Data[2] > 100.0):
                 return ("Humedad erronea")
             else:
                 med = {"Temp": Data[0], "Date": Data[1], "Hum": Data[2]}

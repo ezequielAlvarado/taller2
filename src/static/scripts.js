@@ -8,19 +8,19 @@ function x(){
         success: function( data ) {
             c = data['cant'];
             date = data['date'];
+            console.log(date);
+            h = data['hum'];
+            t = data['temp'];
+            tipo = "Temperature";
+            tipo2 = "Humidity";
             if(c > 0){
                 for(var i = 0; i<c; i++){
                     var dat = new Date(date[i]*1000);
                     date[i]=dat.toLocaleString("es-AR");
                 }
             }
-            console.log(date);
-            h = data['hum'];
-            t = data['temp'];
-            tipo = "Temperature";
-            tipo2 = "Humidity";
-            grafico(date,t,c,tipo);
-            grafico(date,h,c,tipo2);
+            grafico(date,t,c,tipo,1);
+            grafico(date,h,c,tipo2,1);
         }
     });
 }
@@ -36,7 +36,16 @@ function tiempo() {
 }
 
 
-function grafico(date,data,cant,tipo){
+function grafico(date,data,cant,tipo, inicio){
+    if(inicio == 0){
+        if(cant > 0){
+            for(var i = 0; i<cant; i++){
+                var dat = new Date(date[i]*1000);
+                date[i]=dat.toLocaleString("es-AR");
+            }
+        }
+        inicio = 1;
+    }
     if(tipo == "Temperature"){
         Max = 60;
         Min = 0;

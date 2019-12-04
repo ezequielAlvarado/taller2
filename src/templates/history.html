@@ -47,7 +47,7 @@
                         d = JSON.parse('{{date | tojson | safe}}');
                         t = JSON.parse('{{temp | tojson | safe}}');
                         tipo = "Temperature"
-                        grafico(d,t,'{{cant}}', tipo);
+                        grafico(d,t,'{{cant}}', tipo, 0);
                     </script>
                     </canvas>
                 </div>
@@ -59,7 +59,7 @@
                         d = JSON.parse('{{date | tojson | safe}}');
                         h = JSON.parse('{{hum | tojson | safe}}');
                         tipo = "Humidity"
-                        grafico(d,h,'{{cant}}', tipo);
+                        grafico(d,h,'{{cant}}', tipo, 0);
                     </script>
                     </canvas>
                 </div>

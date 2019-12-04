@@ -204,9 +204,9 @@ def persistir_datos():
     archivo.write(str(timestamp))
     archivo.write("\n")
     archivo.close()
-    Data[0]= float(temp)
-    Data[1]= timestamp
-    Data[2]= float(humedad)
+    Data[0]=float(temp)
+    Data[1]=timestamp
+    Data[2]=float(humedad)
     schemadb.add_data(Data)
 
 def cargar_datos():
@@ -329,7 +329,7 @@ def get_d():
     print("llega")
     if(N == 0):
         print("No hay resultados.")
-        return jsonify({'date' : 0, 'hum': 0, 'temp' : 0, 'cant': 0})
+        return jsonify({'date' : 0, 'hum': 0, 'temp' : 0, 'cant': N})
     else:
         for item in x:
             date.append(item["Date"]) #agrego valores ya que date[0] no existe al crearlo vacio
@@ -360,5 +360,6 @@ if __name__ == "__main__":
     print(schemadb.connectbd())
     app.run(host='0.0.0.0', port=5000, debug=True)
 
-
+while True:
+	time.sleep(1)
     
