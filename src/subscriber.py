@@ -1,7 +1,10 @@
+# coding=utf-8
 #
 # Copyright 2010-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
-# coding=utf-8
+
+
+
 
 
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
@@ -18,8 +21,8 @@ from AWSIoTPythonSDK.core.protocol.connection.cores import ProgressiveBackOffCor
 from AWSIoTPythonSDK.exception.AWSIoTExceptions import DiscoveryInvalidRequestException
 
 from datetime import datetime
-from flask import Flask, jsonify
-from flask import render_template
+from flask import Flask, jsonify, redirect, url_for
+from flask import render_template, request
 import schemadb
 
 app = Flask(__name__)       
@@ -32,6 +35,8 @@ GGC_ADDR_NAME = "ggc-host"    # stores GGC host address
 temp="0"
 humedad="0"
 timestamp="1574190244"
+Data = [0,0,0]
+tiempo = 3600 # Una hora atras
 
 # Shadow JSON schema:
 #
@@ -199,9 +204,9 @@ def persistir_datos():
     archivo.write(str(timestamp))
     archivo.write("\n")
     archivo.close()
-    Data[0]=temp
-    Data[1]=humedad
-    Data[2]=timestamp
+    Data[0]= float(temp)
+    Data[1]= timestamp
+    Data[2]= float(humedad)
     schemadb.add_data(Data)
 
 def cargar_datos():
@@ -269,8 +274,7 @@ deviceShadowHandler.shadowRegisterDeltaCallback(customShadowCallback_Delta)
 
 
 cargar_datos()
-Data[3] = {0,0,0}
-tiempo = 3600 # Una hora atras
+
 
 @app.route("/")
 def main():
@@ -325,7 +329,7 @@ def get_d():
     print("llega")
     if(N == 0):
         print("No hay resultados.")
-        return jsonify({'date' : 0, 'hum': 0, 'temp' : 0, 'cant': N})
+        return jsonify({'date' : 0, 'hum': 0, 'temp' : 0, 'cant': 0})
     else:
         for item in x:
             date.append(item["Date"]) #agrego valores ya que date[0] no existe al crearlo vacio
@@ -353,8 +357,8 @@ def handle_intervalo():
 
 
 if __name__ == "__main__":
+    print(schemadb.connectbd())
     app.run(host='0.0.0.0', port=5000, debug=True)
 
-while True:
-	time.sleep(1)
+
     

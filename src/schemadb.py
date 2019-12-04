@@ -17,14 +17,14 @@ def connectbd():
 
 def default_create():
     global mediciones
-    default = {"Temp": 0, "Date": 0, "Hum": 0 }
+    default = {"Temp": float(0), "Date": 0, "Hum": float(0) }
     x=mediciones.insert_one(default)
 
 
 def add_data(Data):
     global mediciones
     print(Data[0])
-    if(Data[0] < 1) or (Data[0] > 100):
+    if(Data[0] < 1.0) or (Data[0] > 100.0):
         return ("Temp erronea")
     else:
         if(Data[1] < 1):
