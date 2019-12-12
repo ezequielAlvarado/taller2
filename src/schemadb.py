@@ -1,4 +1,3 @@
-import app
 import pymongo
 
 cliente = pymongo.MongoClient("mongodb://localhost:27017/")
